@@ -88,7 +88,7 @@ export function drawPick(ctx, time, title, options, accent) {
   text(ctx, 'choose one', W / 2, 168, { size: 14, color: PALETTE.white, alpha: 0.6 });
 
   const n = options.length;
-  const cw = 300, ch = 260;
+  const cw = 300, ch = 290;
   const totalW = n * cw + (n - 1) * 40;
   let picked = -1;
   for (let i = 0; i < n; i++) {
@@ -111,10 +111,10 @@ export function drawPick(ctx, time, title, options, accent) {
     }
     ctx.restore();
 
-    sigil(ctx, x, y - 55, 42, time * (0.4 + i * 0.13), col, hover ? 0.9 : 0.5);
+    sigil(ctx, x, y - 70, 42, time * (0.4 + i * 0.13), col, hover ? 0.9 : 0.5);
     text(ctx, `[${i + 1}]`, x, y - ch / 2 + 22, { size: 13, color: PALETTE.white, alpha: 0.5 });
-    text(ctx, o.name, x, y + 20, { size: 17, color: col, glow: hover ? col : null });
-    wrapText(ctx, o.desc, x, y + 55, cw - 40, 13);
+    text(ctx, o.name, x, y + 8, { size: 17, color: col, glow: hover ? col : null });
+    wrapText(ctx, o.desc, x, y + 42, cw - 40, 13);
     if (o.tag) text(ctx, o.tag.toUpperCase(), x, y + ch / 2 - 20, { size: 10, color: PALETTE.white, alpha: 0.4 });
 
     if ((hover && input.mouse.clicked) || input.pressed('Digit' + (i + 1))) picked = i;

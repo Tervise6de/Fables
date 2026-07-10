@@ -10,6 +10,7 @@ import { newRun, startNextWave, update as updateRun, draw as drawRun, W, H } fro
 import { dealMutations, MUTATIONS, checkUnlocks } from './game/mutations.js';
 import { evolutionChoices } from './game/forms.js';
 import { drawTitle, drawPick, drawPause, drawDeath } from './ui/screens.js';
+import { award } from './core/achievements.js';
 import { updateAutopilot } from './autopilot.js';
 
 const canvas = document.getElementById('game');
@@ -51,6 +52,7 @@ function offerMutations() {
   game.pickOptions = dealMutations(game.run);
   if (game.pickOptions.length === 0) { startNextWave(game.run); return; }
   game.pickKind = 'mutation';
+  game.run.banners.length = 0; // don't bleed wave banners through the overlay
   game.state = 'pick';
 }
 
@@ -59,6 +61,7 @@ function offerEvolution() {
   if (choices.length === 0) { offerMutations(); return; }
   game.pickOptions = choices.map((f) => ({ name: f.name, desc: f.desc + '  ULT: ' + f.ult.desc, color: f.color, tag: 'evolution', form: f }));
   game.pickKind = 'evolve';
+  game.run.banners.length = 0;
   game.state = 'pick';
 }
 
@@ -67,10 +70,12 @@ function applyPick(i) {
   if (game.pickKind === 'evolve') {
     game.run.boss.setForm(o.form);
     game.run.banner(`YOU HAVE BECOME ${o.form.name}`, o.form.color);
+    if (o.form.tier === 3) game.run.achieve('FINAL_FORM');
   } else {
     o.apply(game.run.boss.stats, game.run.boss, game.run);
     game.run.mutations.push(o.id);
     game.run.banner(o.name, o.cursed ? '#ff5346' : '#e239b7');
+    if (o.cursed) game.run.achieve('CURSED');
   }
   game.state = 'run';
   startNextWave(game.run);
@@ -87,6 +92,7 @@ function onDeath() {
   const newUnlocks = checkUnlocks(save);
   saveMod.save();
   game.deathStats = { wave: run.wave, kills: run.kills, dread: run.dread, newBest, newUnlocks };
+  award('FIRST_DEATH');
   game.state = 'dead';
   console.log('[PLAYTEST]', JSON.stringify({ event: 'death', wave: run.wave, kills: run.kills, dread: run.dread, time: Math.round(run.time) }));
 }

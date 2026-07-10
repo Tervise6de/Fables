@@ -1,0 +1,36 @@
+{
+  "name": "final-form",
+  "productName": "FINAL FORM",
+  "version": "1.0.0",
+  "description": "You are the boss fight. A reverse boss-fight roguelite.",
+  "main": "main.js",
+  "author": "Tervise6de",
+  "license": "UNLICENSED",
+  "scripts": {
+    "start": "electron .",
+    "dist:win": "electron-builder --win --x64",
+    "dist:linux": "electron-builder --linux --x64",
+    "dist:mac": "electron-builder --mac"
+  },
+  "devDependencies": {
+    "electron": "^33.0.0",
+    "electron-builder": "^25.0.0"
+  },
+  "optionalDependencies": {
+    "steamworks.js": "^0.4.0"
+  },
+  "build": {
+    "appId": "com.tervise6de.finalform",
+    "files": [
+      "main.js",
+      "preload.js",
+      "steam_appid.txt",
+      { "from": "../web", "to": "web" }
+    ],
+    "win": { "target": "dir" },
+    "linux": { "target": "dir", "category": "Game" },
+    "mac": { "target": "dir", "category": "public.app-category.games" },
+    "asar": true,
+    "asarUnpack": ["**/node_modules/steamworks.js/**"]
+  }
+}

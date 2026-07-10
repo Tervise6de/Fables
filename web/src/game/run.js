@@ -13,6 +13,7 @@ import { buildSpawns, spawnFromDescriptor } from './waves.js';
 import { isEvolutionWave, evolutionChoices } from './forms.js';
 import { glowCircle, ring, text, bar, PALETTE } from '../render/draw.js';
 import { get as getSave } from '../core/save.js';
+import { award } from '../core/achievements.js';
 
 export const W = 1280, H = 720;
 
@@ -52,6 +53,11 @@ export function newRun() {
       this.boss.hurt(dmg, this);
     },
 
+    achieve(id) {
+      const desc = award(id);
+      if (desc) this.banner(`⛧ ${desc.split(' — ')[0].toUpperCase()} ⛧`, PALETTE.gold);
+    },
+
     damageHero(h, dmg, crit) {
       if (h.dead || h.entering) return;
       h.hp -= dmg;
@@ -76,7 +82,8 @@ export function newRun() {
       }
       const amount = Math.round(heroCost(h.type) * 2 * this.dreadMul);
       this.motes.push({ x: h.x, y: h.y, vx: 0, vy: 0, amount, t: 0.4 });
-      if (h.type === 'paladin') this.banner(`${h.name} HAS FALLEN`, h.color);
+      if (h.type === 'paladin') { this.banner(`${h.name} HAS FALLEN`, h.color); this.achieve('PALADIN_DOWN'); }
+      if (this.kills >= 100) this.achieve('CENTURION');
     },
   };
   return run;
@@ -153,6 +160,9 @@ export function update(run, dt) {
     const bonus = Math.round(run.wave * 2 * run.dreadMul);
     run.dread += bonus;
     run.banner(`WAVE ${run.wave} WIPED — +${bonus} DREAD`, PALETTE.gold);
+    if (run.wave === 1) run.achieve('FIRST_WIPE');
+    if (run.wave >= 10) run.achieve('WAVE_10');
+    if (run.wave >= 15) run.achieve('WAVE_15');
   }
   if (run.betweenWaves && run.wave > 0 && run.waveClearT > 0) {
     run.waveClearT -= dt;
