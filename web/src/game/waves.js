@@ -21,7 +21,7 @@ const TYPES = ['knight', 'knight', 'rogue', 'archer', 'archer', 'mage', 'healer'
 export function partyForWave(wave) {
   if (wave <= AUTHORED.length) return [...AUTHORED[wave - 1]];
   // Procedural: budget grows linearly; paladin every 5th wave.
-  let budget = 8 + wave * 1.4;
+  let budget = 8 + wave * 1.8;
   const party = [];
   if (wave % 5 === 0) { party.push('paladin'); budget -= heroCost('paladin'); }
   party.push('healer'); budget -= heroCost('healer');
@@ -32,7 +32,7 @@ export function partyForWave(wave) {
     if (c <= budget) { party.push(t); budget -= c; }
   }
   // cap party size so late waves stay readable and fair
-  return shuffle(party).slice(0, 12);
+  return shuffle(party).slice(0, 14);
 }
 
 // Gate positions: middle of each arena edge.

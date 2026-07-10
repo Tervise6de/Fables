@@ -22,8 +22,11 @@ export function heroCost(type) { return BASE[type].cost; }
 
 export function createHero(type, x, y, wave) {
   const b = BASE[type];
-  const hpMult = 1 + (wave - 1) * 0.17;
-  const dmgMult = 1 + (wave - 1) * 0.06;
+  // Linear early, exponential after wave 8 — the boss's mutation stack is
+  // multiplicative, so heroes must eventually out-curve it or runs never end.
+  const late = Math.max(0, wave - 8);
+  const hpMult = (1 + (wave - 1) * 0.16) * Math.pow(1.09, late);
+  const dmgMult = (1 + (wave - 1) * 0.06) * Math.pow(1.045, late);
   return {
     type, x, y,
     hp: Math.round(b.hp * hpMult),
